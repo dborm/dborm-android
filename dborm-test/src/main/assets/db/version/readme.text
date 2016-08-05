@@ -1,0 +1,40 @@
+version目录下存放的文件为数据库脚本文件
+命名规范：version_+[版本号]+.sql
+其中：version_1.sql文件存放的脚本为初始化数据库中的表时所需的脚本
+version_[版本号>1].sql文件：数据库由上一个版本升级到当前版本所需的升级脚本文件
+
+
+修改表的脚本示例：
+1.向user_info表中添加字段nick_name类型为字符串
+ALTER TABLE user_info ADD nick_name NVARCHAR;
+2.向user_info表中添加字段nick_name类型为字符串，默认值为“111”，不允许为空
+ALTER TABLE user_info ADD nick_name NVARCHAR DEFAULT '111' NOT NULL;
+3.向user_info表中添加字段nick_name类型为字符串，默认值为“111”，不允许为空，长度限制为64个字符
+ALTER TABLE user_info ADD nick_name NVARCHAR CHECK ( LENGTH (nick_name)<=64) DEFAULT '111' NOT NULL;
+4.向user_info表中添加字段login_num类型为数字
+ALTER TABLE user_info ADD login_num INTEGER(32);
+
+
+
+修改字段SQL生成小技巧：
+通过navigate cat软件修改之后产生相应的脚本，复制过来即可。
+
+
+注意事项：
+1.不可修改字段名称
+
+
+
+每个存放在sqlite数据库中（或者由这个数据库引擎操作）的值都有下面中的一个存储类：
+NULL，值是NULL
+INTEGER，值是有符号整形，根据值的大小以1,2,3,4,6或8字节存放
+REAL，值是浮点型值，以8字节IEEE浮点数存放
+TEXT，值是文本字符串，使用数据库编码（UTF-8，UTF-16BE或者UTF-16LE）存放
+BLOB，只是一个数据块，完全按照输入存放（即没有准换）
+
+
+Sqlite的字段类型与Java的属性类型对照关系如下：
+TEXT		String,Boolean
+INTEGER		Short,Integer,Long,Date
+REAL		Float,Double
+BLOB		Byte

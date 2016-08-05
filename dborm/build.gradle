@@ -1,0 +1,82 @@
+//apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+group = 'org.dborm.android'
+version = '1.0.0-SNAPSHOT'
+
+
+android {
+    compileSdkVersion 8
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 15
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+
+// 设置 maven 库地址
+repositories {
+    mavenCentral() // 中央库
+    maven { url 'http://112.124.54.136:6001/nexus/content/groups/public/' } // 自定义库地址
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+//    compile files('libs/dborm-core-1.0.2.jar')//依赖libs目录下的jar包
+    compile 'org.dborm.core:dborm-core:1.1.0-SNAPSHOT' //依赖nexus私服中的jar包或aar包（Android库项目）
+
+}
+
+
+uploadArchives {
+    repositories.mavenDeployer {
+        name = 'mavenDeployer'
+        pom.name = "dborm-android"
+        pom.artifactId = "dborm-android"
+        pom.version = "1.0.2-SNAPSHOT"
+        pom.groupId = "org.dborm.android"
+        pom.packaging = 'aar'
+//        发布到releases仓库
+//        repository(url: "http://xxx.xxx.xxx.xx:8080/content/repositories/releases") {
+//            authentication(userName: "xxxx", password: "xxxx")
+//        }
+//        发布到snapshots仓库
+        snapshotRepository(url: "http://112.124.54.136:6001/nexus/content/repositories/snapshots/") {
+            authentication(userName: "deployment", password: "deploymentcocho")
+        }
+//        发布到本地指定目录下
+//        repository(url: 'file://' + project.rootDir + '/outputs-aar')
+
+    }
+
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+//
+//task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
+//
+artifacts {
+//    archives javadocJar
+    archives sourcesJar
+}
