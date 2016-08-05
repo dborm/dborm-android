@@ -26,7 +26,10 @@ public class DataConverterSQLite implements DataConverter {
         if (fieldValue != null) {
             if (Date.class.equals(fieldValue.getClass())) {
                 Date time = (Date) fieldValue;
-                return time.getTime();
+                return time.getTime();//将Date类型的值存储为时间戳
+            }
+            if (Boolean.class.equals(fieldValue.getClass())) {
+                return fieldValue.toString();//将Boolean类型的值存储为字符串
             }
         }
         return fieldValue;
@@ -36,7 +39,7 @@ public class DataConverterSQLite implements DataConverter {
     public Object columnValueToFieldValue(Object columnValue, Field field) {
         if (field != null && columnValue != null) {
             if (isDate(field.getType())) {
-                long time = (Long) columnValue;
+                long time = Long.parseLong(columnValue.toString());
                 return new Date(time);
             }
         }
@@ -55,37 +58,43 @@ public class DataConverterSQLite implements DataConverter {
      * @time 2013-5-5上午2:44:02
      */
     public Object columnValueToFieldValue(Cursor cursor, String columnName, Field field) {
-        Class<?> type = field.getType();
         int columnIndex = cursor.getColumnIndex(columnName);
-        if (cursor.isNull(columnIndex)) {
-            return null;
-        }
-        try {
-            if (String.class.equals(type)) {
+        if (!cursor.isNull(columnIndex)) {
+            if (field == null) {
                 return cursor.getString(columnIndex);
-            } else if (Integer.class.equals(type)) {
-                return cursor.getInt(columnIndex);
-            } else if (Boolean.class.equals(type)) {
-                return cursor.getShort(columnIndex) > 0;
-            } else if (isDate(type)) {
-                return cursor.getLong(columnIndex);
-            } else if (Long.class.equals(type)) {
-                return cursor.getLong(columnIndex);
-            } else if (Float.class.equals(type)) {
-                return cursor.getFloat(columnIndex);
-            } else if (isDouble(type)) {
-                return cursor.getDouble(columnIndex);
-            } else if (isShort(type)) {
-                return cursor.getShort(columnIndex);
-            } else if (isByte(type)) {
-                return cursor.getBlob(columnIndex);
-            } else {
-                throw new UnsupportedOperationException("类[" + field.getDeclaringClass() + "]中的属性[" + field.getName() + "] 的类型名称为["
-                        + type.getName() + "] 暂不支持!\n 暂时支持的类型名称：" + SUPPORT_TYPE);
             }
-        } catch (Exception e) {
-            throw new RuntimeException("将列名为[" + columnName + "] 的值转换为属性名为[" + field.getName() + "]的值时出错!", e);
+            Class<?> type = field.getType();
+            try {
+                if (String.class.equals(type)) {
+                    return cursor.getString(columnIndex);
+                } else if (Integer.class.equals(type)) {
+                    return cursor.getInt(columnIndex);
+                } else if (Boolean.class.equals(type)) {
+                    String booleanValue = cursor.getString(columnIndex);
+                    if (booleanValue != null) {
+                        return Boolean.parseBoolean(booleanValue);
+                    }
+                } else if (isDate(type)) {
+                    return cursor.getLong(columnIndex);
+                } else if (Long.class.equals(type)) {
+                    return cursor.getLong(columnIndex);
+                } else if (Float.class.equals(type)) {
+                    return cursor.getFloat(columnIndex);
+                } else if (isDouble(type)) {
+                    return cursor.getDouble(columnIndex);
+                } else if (isShort(type)) {
+                    return cursor.getShort(columnIndex);
+                } else if (isByte(type)) {
+                    return cursor.getBlob(columnIndex);
+                } else {
+                    throw new UnsupportedOperationException("类[" + field.getDeclaringClass() + "]中的属性[" + field.getName() + "] 的类型名称为["
+                            + type.getName() + "] 暂不支持!\n 暂时支持的类型名称：" + SUPPORT_TYPE);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("将列名为[" + columnName + "] 的值转换为属性名为[" + field.getName() + "]的值时出错!", e);
+            }
         }
+        return null;
     }
 
 

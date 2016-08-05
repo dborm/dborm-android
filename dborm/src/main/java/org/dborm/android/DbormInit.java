@@ -64,14 +64,18 @@ public class DbormInit {
      * 根据xml描述信息初始化表结构
      */
     public void initSchema() throws Exception {
-        DbormSchemaInit schema = new DbormSchemaInit();
-        AssetManager assetManager = DbormContexts.context.getResources().getAssets();
-        String[] fileNames = assetManager.list(DbormContexts.schemaPath);
-        for (String fileName : fileNames) {
-            if (fileName.endsWith(".xml")) {//只加载xml文件
-                String filePath = DbormContexts.schemaPath + File.separator + fileName;
-                InputStream inputStream = DbormContexts.context.getResources().getAssets().open(filePath);
-                schema.initSchema(inputStream);
+        if (DbormContexts.schemaPath != null) {
+            DbormSchemaInit schema = new DbormSchemaInit();
+            AssetManager assetManager = DbormContexts.context.getResources().getAssets();
+            String[] fileNames = assetManager.list(DbormContexts.schemaPath);
+            if (fileNames != null) {
+                for (String fileName : fileNames) {
+                    if (fileName.endsWith(".xml")) {//只加载xml文件
+                        String filePath = DbormContexts.schemaPath + File.separator + fileName;
+                        InputStream inputStream = DbormContexts.context.getResources().getAssets().open(filePath);
+                        schema.initSchema(inputStream);
+                    }
+                }
             }
         }
     }

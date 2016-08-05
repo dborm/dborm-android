@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class BaseTest  extends ActivityInstrumentationTestCase2<MainActivity> {
+public class BaseTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
 
     public static final String USER_ID = "USER_ID";
@@ -26,14 +26,21 @@ public class BaseTest  extends ActivityInstrumentationTestCase2<MainActivity> {
         super("org.dborm.test", MainActivity.class);
     }
 
-    public void initDborm(){
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        initDborm();
+        cleanTable();
+    }
+
+
+    public void initDborm() {
         initContexts();
         initDb();
     }
 
     public void initContexts() {
-        String dbPath = Environment.getExternalStorageDirectory() + File.separator + "tbc" + File.separator + "db" + File.separator
-                + "db_test.db";
+        String dbPath = Environment.getExternalStorageDirectory() + File.separator + "dborm" + File.separator + "db_test.db";
         DbormContexts.setDbFilePath(dbPath);
         DbormContexts.setShowSql(true);
         DbormContexts.dbVersion = 1;
@@ -97,5 +104,9 @@ public class BaseTest  extends ActivityInstrumentationTestCase2<MainActivity> {
         assertEquals(true, result);
     }
 
+//    @Override
+//    protected void tearDown() throws Exception {
+//        cleanTable();
+//    }
 
 }

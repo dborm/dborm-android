@@ -10,6 +10,7 @@ import org.dborm.test.utils.domain.UserInfo;
 public class DefaultValueTest extends BaseTest {
 
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         initDborm();
@@ -28,11 +29,6 @@ public class DefaultValueTest extends BaseTest {
         } else {
             assertEquals(true, false);
         }
-    }
-
-
-    public void after() {
-        cleanTable();
     }
 
 
